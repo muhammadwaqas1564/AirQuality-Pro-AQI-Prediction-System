@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirQuality Pro - AQI Prediction System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c7da0;
+            --secondary: #a9d6e5;
+            --accent: #01497c;
+            --light: #f8f9fa;
+            --dark: #012a4a;
+            --success: #38b000;
+            --warning: #ff9e00;
+            --danger: #d00000;
+            --gray: #e9ecef;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e6f7ff 0%, #ffffff 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .tagline {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .form-section {
+            flex: 1;
+            min-width: 350px;
+            padding: 30px;
+            background: var(--light);
+        }
+        
+        .info-section {
+            flex: 1;
+            min-width: 350px;
+            padding: 30px;
+            background: white;
+            border-left: 1px solid var(--gray);
+        }
+        
+        h2 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+        }
+        
+        .input-with-icon input, 
+        .input-with-icon select {
+            padding-left: 45px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.2);
+        }
+        
+        .model-selectors {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .model-option {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .model-option:hover {
+            border-color: var(--primary);
+        }
+        
+        .model-option.active {
+            border-color: var(--primary);
+            background: rgba(44, 125, 160, 0.1);
+        }
+        
+        .model-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        button:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: var(--gray);
+            text-align: center;
+        }
+        
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .info-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .info-card {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .info-card i {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .info-card h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .info-card p {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .aqi-scale {
+            margin-top: 30px;
+        }
+        
+        .scale-bar {
+            height: 10px;
+            background: linear-gradient(90deg, 
+                #00cc00 0%, 
+                #00cc00 20%,
+                #a6cf38 20%,
+                #a6cf38 40%,
+                #fff700 40%,
+                #fff700 60%,
+                #ff8c00 60%,
+                #ff8c00 80%,
+                #ff0000 80%,
+                #ff0000 100%);
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--dark);
+            color: white;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .info-section {
+                border-left: none;
+                border-top: 1px solid var(--gray);
+            }
+            
+            .model-selectors {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-wind"></i>
+                <span>AirQuality Pro</span>
+            </div>
+            <div class="tagline">Advanced AQI Prediction System</div>
+        </header>
+        
+        <div class="content">
+            <div class="form-section">
+                <h2>AQI Prediction</h2>
+                
+                <form method="POST" action="/predict" id="predictionForm">
+                    <div class="form-group">
+                        <label for="co">CO AQI Value</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-smog"></i>
+                            <input type="number" step="any" id="co" name="co" placeholder="Enter CO value" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ozone">Ozone AQI Value</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-cloud-sun"></i>
+                            <input type="number" step="any" id="ozone" name="ozone" placeholder="Enter Ozone value" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="no2">NO2 AQI Value</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-industry"></i>
+                            <input type="number" step="any" id="no2" name="no2" placeholder="Enter NO2 value" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pm25">PM2.5 AQI Value</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-disease"></i>
+                            <input type="number" step="any" id="pm25" name="pm25" placeholder="Enter PM2.5 value" required>
+                        </div>
+                    </div>
+                    
+                    <h3>Select Prediction Model</h3>
+                    <div class="model-selectors">
+                        <div class="model-option active" data-value="decision_tree">
+                            <div class="model-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div>Decision Tree</div>
+                        </div>
+                        
+                        <div class="model-option" data-value="svr">
+                            <div class="model-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div>SVR</div>
+                        </div>
+                        
+                        <div class="model-option" data-value="kmeans">
+                            <div class="model-icon">
+                                <i class="fas fa-cluster"></i>
+                            </div>
+                            <div>KMeans</div>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="model" name="model" value="decision_tree">
+                    
+                    <button type="submit">
+                        <i class="fas fa-calculator"></i>
+                        Calculate AQI Prediction
+                    </button>
+                </form>
+                
+                {% if prediction_text %}
+                <div class="result-container">
+                    <h3>Prediction Result</h3>
+                    <div class="result-value">{{ prediction_text }}</div>
+                    <p>Based on your input values and selected model</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="info-section">
+                <h2>About AQI</h2>
+                <p>The Air Quality Index (AQI) is used by government agencies to communicate to the public how polluted the air currently is or how polluted it is forecast to become.</p>
+                
+                <div class="info-cards">
+                    <div class="info-card">
+                        <i class="fas fa-lungs"></i>
+                        <h3>Health Implications</h3>
+                        <p>AQI values help determine potential health effects of air pollution</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Precautionary Actions</h3>
+                        <p>Based on AQI levels, precautions can be taken to minimize exposure</p>
+                    </div>
+                </div>
+                
+                <div class="aqi-scale">
+                    <h3>AQI Scale</h3>
+                    <div class="scale-bar"></div>
+                    <div class="scale-labels">
+                        <span>0-50</span>
+                        <span>51-100</span>
+                        <span>101-150</span>
+                        <span>151-200</span>
+                        <span>201+</span>
+                    </div>
+                    <div class="scale-labels">
+                        <span>Good</span>
+                        <span>Moderate</span>
+                        <span>Unhealthy (Sensitive)</span>
+                        <span>Unhealthy</span>
+                        <span>Very Unhealthy</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3>How It Works</h3>
+                    <p>Our system uses machine learning models to predict AQI values based on input parameters for various pollutants.</p>
+                    
+                    <ul style="margin-top: 15px; padding-left: 20px;">
+                        <li><strong>Decision Tree</strong>: Non-linear model good for classification</li>
+                        <li><strong>SVR</strong>: Support Vector Regression for continuous values</li>
+                        <li><strong>KMeans</strong>: Clustering algorithm for pattern detection</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>AirQuality Pro &copy; 2023 | Advanced AQI Prediction System</p>
+        </footer>
+    </div>
+
+    <script>
+        // Model selection
+        document.querySelectorAll('.model-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.model-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                this.classList.add('active');
+                document.getElementById('model').value = this.getAttribute('data-value');
+            });
+        });
+        
+        // Form validation
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            let isValid = true;
+            const inputs = this.querySelectorAll('input[type="number"]');
+            
+            inputs.forEach(input => {
+                if (!input.value || isNaN(input.value) || input.value < 0) {
+                    isValid = false;
+                    input.style.borderColor = 'var(--danger)';
+                } else {
+                    input.style.borderColor = '#ddd';
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please enter valid positive numbers for all AQI values.');
+            }
+        });
+    </script>
+</body>
+</html>
